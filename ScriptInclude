@@ -1,0 +1,24 @@
+var GetIncidentsForCaller = Class.create();
+GetIncidentsForCaller.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+    getIncidents: function() {
+        var callerId = this.getParameter('sysparm_caller_id');
+        var result = [];
+
+        var gr = new GlideRecord('incident');
+        gr.addQuery('caller_id', callerId);
+        gr.addQuery('active', true);
+        gr.query();
+
+        while (gr.next()) {
+            result.push({
+                number: gr.getValue('number'),
+                short_description: gr.getValue('short_description'),
+                state: gr.getDisplayValue('state')
+            });
+        }
+
+        return new JSON().encode(result);
+    },
+
+    type: 'GetIncidentsForCaller'
+});
