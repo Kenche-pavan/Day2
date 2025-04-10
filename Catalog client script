@@ -1,0 +1,23 @@
+function onChange(control, oldValue, newValue, isLoading) {
+    if (isLoading || !newValue) return;
+
+    var ga = new GlideAjax('GetIncidentsForCaller');
+    ga.addParam('sysparm_name', 'getIncidents');
+    ga.addParam('sysparm_caller_id', g_form.getValue('caller'));
+
+    ga.getXMLAnswer(function(response) {
+        var incidents = JSON.parse(response);
+
+        if (incidents.length === 0) {
+            g_form.setValue('caller_incident_list', 'No open incidents found.');
+            return;
+        }
+
+        var list = 'Open Incidents:\n';
+        for (var i = 0; i < incidents.length; i++) {
+            list += '- ' + incidents[i].number + ': ' + incidents[i].short_description + ' (' + incidents[i].state + ')\n';
+        }
+
+        g_form.setValue('caller_incident_list', list);
+    });
+}
